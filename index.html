@@ -3595,12 +3595,13 @@ document.querySelectorAll('#resumeBtn, .btn-resume-dl').forEach(el => {
     if (!section) return;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduced) { section.classList.add('approach-in'); return; }
+    const threshold = window.innerWidth < 768 ? 0.08 : 0.4;
     const io = new IntersectionObserver(([e]) => {
         if (e.isIntersecting) {
             section.classList.add('approach-in');
             io.disconnect();
         }
-    }, { threshold: 0.4 });
+    }, { threshold, rootMargin: '0px 0px -60px 0px' });
     io.observe(section);
 })();
 
