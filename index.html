@@ -91,7 +91,7 @@
     --glass-blur:    blur(14px) saturate(1.4);
 }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
 
 .sr-only {
     position: absolute; width: 1px; height: 1px; padding: 0;
@@ -1207,6 +1207,7 @@ nav.nav-scrolled .nav-inner { height: calc(var(--nav-h) - 16px); }
 #testimonials {
     padding: 104px 0;
     background: var(--bg);
+    overflow-x: hidden;
 }
 .testimonials-head { margin-bottom: 56px; display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
 
