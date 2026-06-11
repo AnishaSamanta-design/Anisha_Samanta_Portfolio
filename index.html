@@ -3881,6 +3881,25 @@ document.querySelectorAll('#resumeBtn, .btn-resume-dl').forEach(el => {
         initOverlay('sportivoLink', 'sportivoCaseStudy', 'sportivoBack', 'sportivoCloseX');
         initOverlay('pricingLink',  'pricingCaseStudy',  'pricingBack',  'pricingCloseX');
         initOverlay('loanLink',     'loanCaseStudy',     'loanBack',     'loanCloseX');
+
+        /* Fit the live PhonePe prototype: render at a 390px phone viewport and
+           scale it to fill the phone-screen slot exactly, at any window size. */
+        (function () {
+            const slot = document.getElementById('phonePeProtoSlot');
+            if (!slot) return;
+            const iframe = slot.querySelector('iframe');
+            const VW = 390; // logical phone viewport width the iframe renders at
+            function fit() {
+                const w = slot.clientWidth;
+                if (!w) return;                 // hidden (overlay closed) → skip
+                const scale = w / VW;
+                iframe.style.transform = 'scale(' + scale + ')';
+                iframe.style.height = (slot.clientHeight / scale) + 'px';
+            }
+            if ('ResizeObserver' in window) new ResizeObserver(fit).observe(slot);
+            window.addEventListener('resize', fit);
+            fit();
+        })();
     });
 })();
 
@@ -4165,12 +4184,18 @@ document.querySelectorAll('#resumeBtn, .btn-resume-dl').forEach(el => {
 
         <div class="cs-overlay-body" style="padding:0;">
             <div class="phonepe-frame-wrap" style="position:relative;width:100%;">
-                <img src="phonepe-frame15.png" alt="PhonePe Digital Gold Adoption case study" style="width:100%;height:auto;display:block;filter:sepia(0.28) contrast(1.04) brightness(0.96) saturate(0.85);">
-                <!-- Live interactive prototype (GitHub Pages), overlaid on the phone screen in the cover. -->
-                <iframe class="phonepe-proto" title="PhonePe Gold interactive prototype"
-                        src="https://anishasamanta-design.github.io/Phonepe-Gold-Silver/"
-                        loading="lazy" allow="clipboard-read; clipboard-write"
-                        style="position:absolute;left:37.53%;top:2.307%;width:28.46%;height:3.319%;border:0;border-radius:7px;background:#000;"></iframe>
+                <img src="Frame 15.svg" alt="PhonePe Digital Gold Adoption case study" style="width:100%;height:auto;display:block;filter:sepia(0.28) contrast(1.04) brightness(0.96) saturate(0.85);">
+                <!-- Live prototype sitting in the cover's screen rect, matching the flat design:
+                     slim dark bezel, rounded corners, gentle shadow (no chunky body / no notch).
+                     The screen renders at a real 390px phone viewport, scaled to fill exactly (see scaleProto JS). -->
+                <div class="phonepe-device" style="position:absolute;left:35.4%;top:2.30%;width:29.2%;height:3.37%;background:#14141a;border-radius:10.5%/5.1%;padding:1.25%;box-sizing:border-box;box-shadow:0 6px 18px rgba(20,8,40,.35);">
+                    <div class="phonepe-device-screen" id="phonePeProtoSlot" style="position:relative;width:100%;height:100%;border-radius:8%/3.9%;overflow:hidden;background:#000;">
+                        <iframe class="phonepe-proto" title="PhonePe Gold interactive prototype"
+                                src="https://anishasamanta-design.github.io/Phonepe-Gold-Silver/"
+                                loading="lazy" allow="clipboard-read; clipboard-write"
+                                style="width:390px;height:832px;border:0;display:block;transform-origin:top left;transform:scale(var(--proto-scale,1));"></iframe>
+                    </div>
+                </div>
             </div>
         </div>
 
