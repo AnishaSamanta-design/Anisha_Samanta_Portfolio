@@ -3752,14 +3752,18 @@ document.querySelectorAll('#resumeBtn, .btn-resume-dl').forEach(el => {
     function next() { goTo(current + 1); }
     function prev() { goTo(current - 1); }
 
-    function startTimer() { autoTimer = setInterval(next, 4500); }
-    function resetTimer() { clearInterval(autoTimer); startTimer(); }
+    function startTimer() { clearInterval(autoTimer); autoTimer = setInterval(next, 4000); }
+    function resetTimer() { startTimer(); }
 
     prevBtn.addEventListener('click', () => { prev(); resetTimer(); });
     nextBtn.addEventListener('click', () => { next(); resetTimer(); });
 
-    track.addEventListener('mouseenter', () => clearInterval(autoTimer));
-    track.addEventListener('mouseleave', startTimer);
+    /* Pause only while hovering the front (active) card you're reading,
+       so the carousel keeps auto-sliding when the cursor is anywhere else. */
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', () => { if (card.classList.contains('tc-active')) clearInterval(autoTimer); });
+        card.addEventListener('mouseleave', startTimer);
+    });
 
     let touchX = 0;
     track.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
