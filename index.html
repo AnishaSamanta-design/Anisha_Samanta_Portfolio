@@ -738,35 +738,39 @@ nav.nav-scrolled .nav-inner { height: calc(var(--nav-h) - 16px); }
     color: var(--gold);
     opacity: 0;
     padding-bottom: 80px;
-    transition: opacity 0.5s ease;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: opacity 0.35s ease, transform 0.5s cubic-bezier(0.16,1,0.3,1);
 }
 
 /* ── Approach section: scroll-triggered stagger animation ── */
 .recipe-steps .recipe-step {
     opacity: 0;
-    transform: translateY(42px) scale(0.95);
+    transform: translateX(-44px) scale(0.97);
     transition:
-        opacity   0.65s cubic-bezier(0.16,1,0.3,1),
-        transform 0.70s cubic-bezier(0.16,1,0.3,1),
+        opacity   0.6s cubic-bezier(0.16,1,0.3,1),
+        transform 0.6s cubic-bezier(0.16,1,0.3,1),
         border-color 0.35s ease,
         box-shadow   0.35s ease;
 }
 
-/* Fired when #approach has 40% in viewport (section centre) */
+/* Sequential reveal: steps slide in horizontally, arrows draw as a progress status.
+   Revealed items stay open; the whole thing resets/replays when the section
+   re-enters the viewport (see the approach observer JS). */
 #approach.approach-in .recipe-steps .recipe-step {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateX(0) scale(1);
 }
-#approach.approach-in .recipe-steps .recipe-arrow { opacity: 0.72; }
+#approach.approach-in .recipe-steps .recipe-arrow { opacity: 0.72; transform: scaleX(1); }
 
 /* Child order: step(1) arrow(2) step(3) arrow(4) step(5) arrow(6) step(7) */
-#approach.approach-in .recipe-steps > :nth-child(1) { transition-delay: 0.05s; }
-#approach.approach-in .recipe-steps > :nth-child(2) { transition-delay: 0.20s; }
-#approach.approach-in .recipe-steps > :nth-child(3) { transition-delay: 0.25s; }
-#approach.approach-in .recipe-steps > :nth-child(4) { transition-delay: 0.40s; }
-#approach.approach-in .recipe-steps > :nth-child(5) { transition-delay: 0.45s; }
-#approach.approach-in .recipe-steps > :nth-child(6) { transition-delay: 0.60s; }
-#approach.approach-in .recipe-steps > :nth-child(7) { transition-delay: 0.65s; }
+#approach.approach-in .recipe-steps > :nth-child(1) { transition-delay: 0.10s; }
+#approach.approach-in .recipe-steps > :nth-child(2) { transition-delay: 0.45s; }
+#approach.approach-in .recipe-steps > :nth-child(3) { transition-delay: 0.70s; }
+#approach.approach-in .recipe-steps > :nth-child(4) { transition-delay: 1.05s; }
+#approach.approach-in .recipe-steps > :nth-child(5) { transition-delay: 1.30s; }
+#approach.approach-in .recipe-steps > :nth-child(6) { transition-delay: 1.65s; }
+#approach.approach-in .recipe-steps > :nth-child(7) { transition-delay: 1.90s; }
 
 /* ═══════════════════════════════════════════════════════
    WORK / PROJECTS SECTION
@@ -1081,7 +1085,7 @@ nav.nav-scrolled .nav-inner { height: calc(var(--nav-h) - 16px); }
    ABOUT
 ═══════════════════════════════════════════════════════ */
 #about {
-    padding: 104px 0;
+    padding: 104px 0 0;
     background: var(--surface);
     position: relative;
     overflow: hidden;
@@ -1109,13 +1113,19 @@ nav.nav-scrolled .nav-inner { height: calc(var(--nav-h) - 16px); }
     border: 1.5px solid var(--gold-mid);
     border-radius: 14px;
     overflow: hidden;
+    transition: transform 0.5s cubic-bezier(0.2,0.8,0.2,1), box-shadow 0.5s ease;
 }
 .about-img-frame img {
     width: 100%; height: 100%; object-fit: cover;
-    filter: sepia(0.42) contrast(1.07) brightness(0.93) saturate(0.85) hue-rotate(-6deg);
+    filter: grayscale(1);
     transition: filter 0.6s ease;
 }
-.about-img-frame:hover img { filter: sepia(0.18) contrast(1.04) brightness(0.98) saturate(0.95); }
+/* Cursor anywhere in the About section: portrait turns colour and gently pops up */
+#about:hover .about-img-frame {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 24px 50px rgba(43,34,26,0.22);
+}
+#about:hover .about-img-frame img { filter: grayscale(0); }
 /* Corner ornaments on portrait */
 .about-img-frame::before,
 .about-img-frame::after {
@@ -1446,6 +1456,29 @@ nav.nav-scrolled .nav-inner { height: calc(var(--nav-h) - 16px); }
     outline-offset: 3px;
     border-radius: 16px;
 }
+
+/* Experience cards — round logo + role/company/period (reuses .cred-card glass) */
+.exp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+    max-width: 560px;
+}
+.exp-card { flex-direction: row; align-items: center; gap: 16px; padding: 18px 20px; }
+.exp-logo {
+    width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0; overflow: hidden;
+    background: #fff; border: 1px solid var(--glass-border);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 8px rgba(43,34,26,0.10);
+}
+.exp-logo img { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
+.exp-body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.exp-role { font-family: var(--serif); font-size: 16.5px; font-weight: 700; font-style: italic;
+    color: var(--ink); line-height: 1.25; margin: 0; }
+.exp-company { font-family: var(--ui, sans-serif); font-size: 12px; font-weight: 600;
+    color: var(--rust); letter-spacing: 0.02em; margin: 0; }
+.exp-period { font-family: var(--mono); font-size: 9.5px; color: var(--ink-muted);
+    letter-spacing: 0.08em; margin: 0; }
 
 /* Card header row: type tag + year */
 .cred-head {
@@ -2571,6 +2604,124 @@ nav.nav-scrolled .nav-inner { height: calc(var(--nav-h) - 16px); }
 }
 button:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 6px; }
 
+/* ════════════════════════════════════════════════════════════
+   ASK-ANISHA — voice-enabled assistant widget
+   ════════════════════════════════════════════════════════════ */
+.aa-launcher {
+    position: fixed; right: 22px; bottom: 22px; z-index: 1200;
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 16px 7px 7px;
+    background: var(--glass-bg); border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-lg), var(--glass-shine);
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    border-radius: 100px; cursor: pointer; color: var(--ink);
+    font-family: var(--ui); font-size: .82rem; font-weight: 600; letter-spacing: .01em;
+    transition: transform .28s cubic-bezier(.2,.8,.25,1), box-shadow .28s;
+}
+.aa-launcher:hover { transform: translateY(-2px); box-shadow: 0 28px 80px rgba(43,34,26,0.26), var(--glass-shine); }
+.aa-launcher.aa-hidden { transform: translateY(16px) scale(.92); opacity: 0; pointer-events: none; }
+.aa-launcher-avatar {
+    width: 42px; height: 42px; border-radius: 50%; flex: none; overflow: hidden;
+    background: linear-gradient(135deg, var(--gold), var(--rust));
+    display: grid; place-items: center; position: relative;
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,.35);
+}
+.aa-launcher-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.aa-launcher-avatar svg { width: 22px; height: 22px; color: #fff; }
+.aa-launcher-avatar::after {
+    content: ""; position: absolute; right: 1px; bottom: 1px;
+    width: 11px; height: 11px; border-radius: 50%; background: var(--olive);
+    box-shadow: 0 0 0 2px var(--bg);
+}
+.aa-launcher-text { display: flex; flex-direction: column; line-height: 1.15; text-align: left; }
+.aa-launcher-text b { font-family: var(--serif); font-size: 1.02rem; font-weight: 600; }
+.aa-launcher-text span { color: var(--ink-muted); font-size: .68rem; font-weight: 500; }
+
+.aa-panel {
+    position: fixed; right: 22px; bottom: 22px; z-index: 1201;
+    width: min(380px, calc(100vw - 32px)); height: min(560px, calc(100vh - 44px));
+    display: flex; flex-direction: column; overflow: hidden;
+    background: var(--glass-bg); border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-lg), var(--glass-shine);
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    border-radius: 22px; color: var(--ink);
+    transform: translateY(16px) scale(.96); opacity: 0; pointer-events: none;
+    transition: transform .3s cubic-bezier(.2,.8,.25,1), opacity .3s;
+}
+.aa-panel.aa-open { transform: translateY(0) scale(1); opacity: 1; pointer-events: auto; }
+.aa-head {
+    display: flex; align-items: center; gap: 11px; padding: 14px 14px 13px;
+    border-bottom: 1px solid var(--border); background: rgba(255,255,255,.06); flex: none;
+}
+.aa-head-avatar {
+    width: 38px; height: 38px; border-radius: 50%; overflow: hidden; flex: none;
+    background: linear-gradient(135deg, var(--gold), var(--rust));
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,.35);
+}
+.aa-head-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.aa-head-meta { flex: 1; line-height: 1.2; }
+.aa-head-meta b { font-family: var(--serif); font-size: 1.12rem; font-weight: 600; display: block; }
+.aa-head-meta span { font-size: .7rem; color: var(--ink-muted); display: inline-flex; align-items: center; gap: 5px; }
+.aa-head-meta span::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--olive); }
+.aa-iconbtn {
+    width: 34px; height: 34px; flex: none; display: grid; place-items: center;
+    border: 1px solid var(--border); background: transparent; color: var(--ink-muted);
+    border-radius: 9px; cursor: pointer; transition: background .2s, color .2s;
+}
+.aa-iconbtn:hover { background: var(--surface-2); color: var(--ink); }
+.aa-iconbtn svg { width: 17px; height: 17px; }
+.aa-iconbtn.aa-muted { color: var(--rust); }
+
+.aa-log {
+    flex: 1; overflow-y: auto; padding: 16px 14px; display: flex; flex-direction: column; gap: 11px;
+    scroll-behavior: smooth;
+}
+.aa-msg { max-width: 84%; padding: 10px 13px; border-radius: 15px; font-size: .86rem; line-height: 1.5; }
+.aa-msg.aa-bot { align-self: flex-start; background: var(--surface); border: 1px solid var(--border); border-bottom-left-radius: 5px; }
+.aa-msg.aa-user { align-self: flex-end; background: linear-gradient(135deg, var(--rust), #9c4626); color: #fff; border-bottom-right-radius: 5px; }
+.aa-typing { align-self: flex-start; display: flex; gap: 4px; padding: 13px 15px; background: var(--surface); border: 1px solid var(--border); border-radius: 15px; border-bottom-left-radius: 5px; }
+.aa-typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-subtle); animation: aa-bounce 1.1s infinite; }
+.aa-typing span:nth-child(2) { animation-delay: .15s; }
+.aa-typing span:nth-child(3) { animation-delay: .3s; }
+@keyframes aa-bounce { 0%, 60%, 100% { transform: translateY(0); opacity: .5; } 30% { transform: translateY(-5px); opacity: 1; } }
+
+.aa-chips { display: flex; flex-wrap: wrap; gap: 7px; padding: 0 14px 12px; flex: none; }
+.aa-chip {
+    padding: 7px 12px; border-radius: 100px; border: 1px solid var(--glass-border);
+    background: rgba(201,150,61,.1); color: var(--ink); font-family: var(--ui);
+    font-size: .74rem; font-weight: 500; cursor: pointer; transition: background .2s, transform .15s;
+}
+.aa-chip:hover { background: rgba(201,150,61,.22); transform: translateY(-1px); }
+
+.aa-inputrow { display: flex; align-items: center; gap: 8px; padding: 11px 12px; border-top: 1px solid var(--border); background: rgba(255,255,255,.06); flex: none; }
+.aa-input {
+    flex: 1; min-width: 0; padding: 10px 14px; border-radius: 100px;
+    border: 1px solid var(--border); background: var(--bg); color: var(--ink);
+    font-family: var(--body); font-size: .85rem;
+}
+.aa-input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+.aa-send, .aa-mic {
+    width: 40px; height: 40px; flex: none; display: grid; place-items: center;
+    border-radius: 50%; border: none; cursor: pointer; transition: transform .15s, background .2s;
+}
+.aa-send { background: linear-gradient(135deg, var(--rust), #9c4626); color: #fff; }
+.aa-send:hover { transform: scale(1.06); }
+.aa-mic { background: var(--surface-2); color: var(--ink); border: 1px solid var(--border); }
+.aa-mic:hover { background: var(--gold); color: #fff; }
+.aa-mic.aa-listening { background: var(--rust); color: #fff; animation: aa-pulse 1.2s infinite; }
+.aa-send svg, .aa-mic svg { width: 18px; height: 18px; }
+@keyframes aa-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(182,85,47,.5); } 50% { box-shadow: 0 0 0 8px rgba(182,85,47,0); } }
+
+@media (max-width: 600px) {
+    .aa-launcher-text { display: none; }
+    .aa-launcher { padding: 7px; }
+    .aa-panel { right: 12px; bottom: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .aa-launcher, .aa-panel, .aa-chip, .aa-send, .aa-mic { transition: none; }
+    .aa-typing span, .aa-mic.aa-listening { animation: none; }
+}
+
 </style>
 </head>
 <body>
@@ -3001,6 +3152,54 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-
               </div>
             </div>
 
+            <!-- CashSense — Restoring spending awareness in UPI -->
+            <div class="proj-card reveal-scale d1">
+              <div class="proj-card-inner" tabindex="0" role="button" aria-pressed="false" aria-label="View project details — press Enter to flip">
+                <div class="proj-card-front">
+                    <div class="proj-stub" style="background:linear-gradient(170deg,#2E0A52,#5F25A0);">
+                        <div class="proj-stub-top">
+                            <span class="proj-stub-admit">Admit One</span>
+                        </div>
+                        <div class="proj-stub-hr"></div>
+                        <span class="proj-stub-num">02</span>
+                    </div>
+                    <div class="proj-perf-v"></div>
+                    <div class="proj-ticket-main">
+                        <div class="proj-ticket-top-row">
+                            <span class="proj-ticket-barcode" aria-hidden="true">102378945004</span>
+                        </div>
+                        <h3 class="proj-title">CashSense</h3>
+                        <p class="proj-problem">Restoring spending awareness in UPI through behavioural design.</p>
+                        <div class="proj-ticket-bot-row">
+                            <div class="proj-tags">
+                                <span class="proj-tag">Behavioural Design</span>
+                                <span class="proj-tag">FinTech</span>
+                                <span class="proj-tag">Product Design</span>
+                            </div>
+                            <span class="proj-flip-hint" aria-hidden="true">flip ↻</span>
+                        </div>
+                    </div>
+                    <div class="proj-img-col">
+                        <img src="cashsense-card.png" alt="CashSense — Cash Sense Mode payment screen" style="object-fit:contain;object-position:center;padding:0;">
+                    </div>
+                </div>
+                <div class="proj-card-back">
+                    <div class="proj-stub" style="background:linear-gradient(170deg,#2E0A52,#5F25A0);">
+                        <div class="proj-stub-top">
+                            <span class="proj-stub-admit">Admit One</span>
+                        </div>
+                        <div class="proj-stub-hr"></div>
+                        <span class="proj-stub-num">02</span>
+                    </div>
+                    <div class="proj-perf-v"></div>
+                    <div class="proj-back-main">
+                        <p class="proj-back-desc">A self-initiated concept that brings the “pain of paying” back to UPI — a Cash Sense Mode that makes a tap feel like handing over real money. Behavioural research, empathy mapping and an iterative hi-fi prototype restore spending awareness without slowing people down.</p>
+                        <button type="button" id="cashSenseLink" class="proj-back-cta">View Case Study <svg aria-hidden="true" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                    </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Optivise Consulting — retro ticket -->
             <div class="proj-card reveal-left d1">
               <div class="proj-card-inner" tabindex="0" role="button" aria-pressed="false" aria-label="View project details — press Enter to flip">
@@ -3067,13 +3266,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-
                     <img src="IMG_0020.jpg" alt="Anisha Samanta"
                          onerror="this.style.display='none'">
                 </div>
-                <div class="about-journey" aria-label="Career path: Engineering to IT to UI/UX Design">
-                    <span class="journey-node">Engineering</span>
-                    <span class="journey-arrow" aria-hidden="true">→</span>
-                    <span class="journey-node">IT Analyst</span>
-                    <span class="journey-arrow" aria-hidden="true">→</span>
-                    <span class="journey-node">UI/UX Design</span>
-                </div>
             </div>
 
             <!-- Content column -->
@@ -3088,21 +3280,324 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-
                     </div>
                 </div>
                 <div class="about-body">
-                    <p>I started my career in enterprise IT, working in asset management and security operations before transitioning into UI/UX design.</p>
-                    <p>Those early years gave me firsthand exposure to operational workflows, system dependencies, and the everyday challenges users face while working with complex tools. Working closely with users in support-driven environments helped me develop empathy, active listening, and a deeper understanding of user-centered problem solving — perspectives that continue to shape my design approach today.</p>
-                    <p>Over the past three years as a UI/UX designer, I've designed 50+ experiences across healthcare, fintech, banking, transport, hospitality and other domains. My work includes enterprise products and business demos for renowned clients across industries, where I focused on simplifying complex workflows into intuitive experiences while maintaining brand guidelines, design consistency, accessibility, and business requirements.</p>
-                </div>
-                <div class="interests-label">Beyond Design</div>
-                <div class="interests">
-                    <span class="interest">Reading</span>
-                    <span class="interest">Trekking</span>
-                    <span class="interest">Dancing</span>
-                    <span class="interest">Photography</span>
-                    <span class="interest">Sketching</span>
-                    <span class="interest">Handcrafting</span>
+                    <p>My journey into design began in enterprise IT, where I spent five years working with complex systems, operational workflows, and the people behind them. That experience taught me to look beyond interfaces and understand how products fit into real-world contexts.</p>
+                    <p>Today, I design digital products with a systems-thinking mindset, balancing user needs, business goals, and thoughtful interactions. Over the past three years, I've worked across industries, transforming complexity into intuitive, accessible experiences.</p>
+                    <p>Beyond design, I enjoy rock climbing, trekking, dancing, and landscape photography. These experiences constantly remind me to stay curious, embrace challenges, and see the world from different perspectives.</p>
                 </div>
             </div>
 
+        </div>
+    </div>
+</section>
+
+
+<!-- ══ MOMENTS — vintage photo frames (Beyond Design) ═══════════ -->
+<style>
+.moments { background: var(--surface); padding: 24px 0; overflow: hidden; }
+[data-theme="dark"] .pframe { background: #2a2114; border-color: rgba(212,168,64,0.22);
+    box-shadow: 0 14px 30px rgba(0,0,0,0.45); }
+.moments-eyebrow { text-align: center; font-family: var(--serif); font-style: italic;
+    font-size: 19px; color: var(--ink-muted); margin: 0 0 4px; }
+.moments-marquee { position: relative; width: 100%; overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); }
+.moments-track { display: flex; align-items: center; gap: 34px; width: max-content; padding: 34px 15px;
+    animation: moments-slide 50s linear infinite; will-change: transform; }
+.moments-marquee:hover .moments-track { animation-play-state: paused; }
+@keyframes moments-slide { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+@media (prefers-reduced-motion: reduce) { .moments-track { animation: none; } }
+.pframe { flex: 0 0 auto; width: 188px; background: #fbf7ee; padding: 12px 12px 0;
+    border: 1px solid var(--gold-faint); box-shadow: 0 12px 28px rgba(43,34,26,0.16); border-radius: 3px;
+    transition: transform .5s cubic-bezier(.2,.85,.25,1), box-shadow .5s ease, filter .5s ease;
+    cursor: pointer; }
+/* scrapbook scatter — varied tilt + height so the row reads with depth, not flat */
+.pframe:nth-child(4n+1) { transform: rotate(-2.6deg) translateY(10px); }
+.pframe:nth-child(4n+2) { transform: rotate(2deg)    translateY(-12px); }
+.pframe:nth-child(4n+3) { transform: rotate(-1.2deg) translateY(-2px) scale(1.04); }
+.pframe:nth-child(4n)   { transform: rotate(2.8deg)  translateY(14px); }
+/* hover: straighten, lift, enlarge, full-colour photo, deeper shadow (after nth-child to win) */
+.pframe:hover { transform: rotate(0deg) translateY(-16px) scale(1.1); z-index: 3;
+    box-shadow: 0 30px 54px rgba(43,34,26,0.34); }
+.pframe:hover .pframe-photo img { filter: none; }
+.pframe:hover .pframe-cap { color: var(--rust); }
+.pframe-photo { position: relative; aspect-ratio: 4/5; border-radius: 2px; overflow: hidden;
+    display: flex; align-items: center; justify-content: center; color: var(--rust);
+    background: linear-gradient(150deg, #efe6d4 0%, #e3d4bb 55%, #d8c4a3 100%); }
+.pframe-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    filter: sepia(0.15) contrast(1.03) saturate(1.06); }
+.pframe-photo svg { width: 38px; height: 38px; opacity: 0.55; }
+.pframe-cap { font-family: var(--serif); font-style: italic; font-size: 15.5px; line-height: 1.3; color: var(--ink);
+    text-align: center; padding: 10px 6px 14px; min-height: 46px; }
+</style>
+<section class="moments" aria-label="Moments beyond design">
+    <p class="moments-eyebrow">A few moments, beyond the screen</p>
+    <div class="moments-marquee">
+        <div class="moments-track">
+                <figure class="pframe">
+                    <div class="pframe-photo"><img src="Climbing 1.jpg" alt="Rock climbing a rock face" loading="lazy"></div>
+                    <figcaption class="pframe-cap">Rock Climbing</figcaption>
+                </figure>
+                <figure class="pframe">
+                    <div class="pframe-photo"><img src="Photography 1.jpg" alt="Framing nature in Kashmir" loading="lazy"></div>
+                    <figcaption class="pframe-cap">Framing nature, Kashmir</figcaption>
+                </figure>
+                <figure class="pframe">
+                    <div class="pframe-photo"><img src="Mt. Rhenock Summit.jpg" alt="Mt. Rhenock Summit, Sikkim" loading="lazy"></div>
+                    <figcaption class="pframe-cap">Mt. Rhenock Summit, Sikkim</figcaption>
+                </figure>
+                <figure class="pframe">
+                    <div class="pframe-photo"><img src="KGL Trek.jpg" alt="Kashmir Great Lakes trek" loading="lazy"></div>
+                    <figcaption class="pframe-cap">KGL Trek</figcaption>
+                </figure>
+                <figure class="pframe">
+                    <div class="pframe-photo"><img src="dance.jpg" alt="Dancing" loading="lazy"></div>
+                    <figcaption class="pframe-cap">Finding Rhythm</figcaption>
+                </figure>
+                <figure class="pframe">
+                    <div class="pframe-photo"><img src="ACT.jpg" alt="Annapurna Circuit Trek" loading="lazy"></div>
+                    <figcaption class="pframe-cap">Annapurna Circuit Trek</figcaption>
+                </figure>
+                <figure class="pframe">
+                    <div class="pframe-photo"><img src="Nature Lover.jpg" alt="Out in nature" loading="lazy"></div>
+                    <figcaption class="pframe-cap">Nature Lover</figcaption>
+                </figure>
+                <figure class="pframe">
+                    <div class="pframe-photo"><img src="BMC Graduation.jpg" alt="BMC graduation day at HMI Darjeeling" loading="lazy"></div>
+                    <figcaption class="pframe-cap">BMC Graduation Day, HMI Darjeeling</figcaption>
+                </figure>
+                <figure class="pframe">
+                    <div class="pframe-photo"><img src="Climbing.jpg" alt="Rock climbing" loading="lazy"></div>
+                    <figcaption class="pframe-cap">Climbing keeps me curious</figcaption>
+                </figure>
+                <figure class="pframe">
+                    <div class="pframe-photo"><img src="Photography.jpg" alt="Photography" loading="lazy"></div>
+                    <figcaption class="pframe-cap">Love capturing little things</figcaption>
+                </figure>
+                <figure class="pframe" aria-hidden="true">
+                    <div class="pframe-photo"><img src="Climbing 1.jpg" alt="Rock climbing a rock face" loading="lazy"></div>
+                    <figcaption class="pframe-cap">Rock Climbing</figcaption>
+                </figure>
+                <figure class="pframe" aria-hidden="true">
+                    <div class="pframe-photo"><img src="Photography 1.jpg" alt="Framing nature in Kashmir" loading="lazy"></div>
+                    <figcaption class="pframe-cap">Framing nature, Kashmir</figcaption>
+                </figure>
+                <figure class="pframe" aria-hidden="true">
+                    <div class="pframe-photo"><img src="Mt. Rhenock Summit.jpg" alt="Mt. Rhenock Summit, Sikkim" loading="lazy"></div>
+                    <figcaption class="pframe-cap">Mt. Rhenock Summit, Sikkim</figcaption>
+                </figure>
+                <figure class="pframe" aria-hidden="true">
+                    <div class="pframe-photo"><img src="KGL Trek.jpg" alt="Kashmir Great Lakes trek" loading="lazy"></div>
+                    <figcaption class="pframe-cap">KGL Trek</figcaption>
+                </figure>
+                <figure class="pframe" aria-hidden="true">
+                    <div class="pframe-photo"><img src="dance.jpg" alt="Dancing" loading="lazy"></div>
+                    <figcaption class="pframe-cap">Finding Rhythm</figcaption>
+                </figure>
+                <figure class="pframe" aria-hidden="true">
+                    <div class="pframe-photo"><img src="ACT.jpg" alt="Annapurna Circuit Trek" loading="lazy"></div>
+                    <figcaption class="pframe-cap">Annapurna Circuit Trek</figcaption>
+                </figure>
+                <figure class="pframe" aria-hidden="true">
+                    <div class="pframe-photo"><img src="Nature Lover.jpg" alt="Out in nature" loading="lazy"></div>
+                    <figcaption class="pframe-cap">Nature Lover</figcaption>
+                </figure>
+                <figure class="pframe" aria-hidden="true">
+                    <div class="pframe-photo"><img src="BMC Graduation.jpg" alt="BMC graduation day at HMI Darjeeling" loading="lazy"></div>
+                    <figcaption class="pframe-cap">BMC Graduation Day, HMI Darjeeling</figcaption>
+                </figure>
+                <figure class="pframe" aria-hidden="true">
+                    <div class="pframe-photo"><img src="Climbing.jpg" alt="Rock climbing" loading="lazy"></div>
+                    <figcaption class="pframe-cap">Climbing keeps me curious</figcaption>
+                </figure>
+                <figure class="pframe" aria-hidden="true">
+                    <div class="pframe-photo"><img src="Photography.jpg" alt="Photography" loading="lazy"></div>
+                    <figcaption class="pframe-cap">Love capturing little things</figcaption>
+                </figure>
+        </div>
+    </div>
+</section>
+
+
+<!-- ══ CERTIFICATIONS ══════════════════════════════════════ -->
+<section id="certifications" aria-labelledby="journey-label">
+    <div class="container">
+        <div class="section-head reveal-scale">
+            <span class="s-label" id="journey-label">My Journey</span>
+            <div class="s-rule" aria-hidden="true">
+                <span class="s-rule-line"></span>
+                <span class="s-rule-sym">✦</span>
+                <span class="s-rule-line"></span>
+            </div>
+        </div>
+
+        <!-- ── Experience sub-section ── -->
+        <div class="cred-sub">
+            <div class="cred-sub-title">
+                <h3>Experience</h3>
+            </div>
+            <div class="exp-grid">
+
+                <article class="cred-card exp-card">
+                    <div class="exp-logo">
+                        <img src="nexwave-logo.jpg" alt="Nexwave logo" loading="lazy">
+                    </div>
+                    <div class="exp-body">
+                        <p class="exp-role">Software Associate</p>
+                        <p class="exp-company">Nexwave</p>
+                        <p class="exp-period">2018 – 2020</p>
+                    </div>
+                </article>
+
+                <article class="cred-card exp-card">
+                    <div class="exp-logo">
+                        <img src="accenture-logo.jpg" alt="Accenture logo" loading="lazy">
+                    </div>
+                    <div class="exp-body">
+                        <p class="exp-role">User Experience Designer</p>
+                        <p class="exp-company">Accenture</p>
+                        <p class="exp-period">2020 – 2026</p>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+
+        <!-- ── Academics sub-section ── -->
+        <div class="cred-sub">
+            <div class="cred-sub-title">
+                <h3>Academics</h3>
+            </div>
+            <div class="acad-grid">
+
+                <article class="cred-card">
+                    <div class="cred-head">
+                        <span class="cred-tag">Degree</span>
+                        <span class="cred-year">2017</span>
+                    </div>
+                    <p class="cred-title">B.E. in Electronics &amp; Communication Engineering</p>
+                    <div class="cred-foot">
+                        <span class="cred-issuer">Supreme Knowledge Foundation Group Of Institutions</span>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+
+        <!-- ── Certifications carousel sub-section ── -->
+        <div class="cred-sub">
+            <div class="cred-sub-title">
+                <h3>Certifications</h3>
+            </div>
+            <div class="cert-carousel-outer">
+                <div class="cert-carousel">
+
+                    <article class="cert-card"
+                             data-cert-img="Advance UI UX Certificate_clean.jpg"
+                             tabindex="0" role="button"
+                             aria-label="View Advanced Certification in UI/UX Design certificate">
+                        <img class="cert-thumb"
+                             src="Advance UI UX Certificate_clean.jpg"
+                             alt="Advanced Certification in UI/UX Design certificate thumbnail"
+                             loading="lazy">
+                        <div class="cert-card-body">
+                            <div class="cert-card-head">
+                                <span class="cert-card-tag">Certification</span>
+                                <span class="cert-card-year">2024</span>
+                            </div>
+                            <p class="cert-card-title">Advanced Certification in UI/UX Design</p>
+                            <div class="cert-card-foot">
+                                <span class="cert-card-issuer">IIIT Bangalore</span>
+                                <span class="cert-card-hint">View ↗</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="cert-card"
+                             data-cert-img="Reinvention aith Agentic AI certificate.png"
+                             tabindex="0" role="button"
+                             aria-label="View Reinvention with Agentic AI certificate">
+                        <img class="cert-thumb"
+                             src="Reinvention aith Agentic AI certificate.png"
+                             alt="Reinvention with Agentic AI certificate thumbnail"
+                             loading="lazy">
+                        <div class="cert-card-body">
+                            <div class="cert-card-head">
+                                <span class="cert-card-tag">Badge</span>
+                                <span class="cert-card-year">2025</span>
+                            </div>
+                            <p class="cert-card-title">Reinvention with Agentic AI</p>
+                            <div class="cert-card-foot">
+                                <span class="cert-card-issuer">Accenture</span>
+                                <span class="cert-card-hint">View ↗</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="cert-card"
+                             data-cert-img="IXDF Certificate.png"
+                             tabindex="0" role="button"
+                             aria-label="View Bring AI Into Your Design System certificate">
+                        <img class="cert-thumb"
+                             src="IXDF Certificate.png"
+                             alt="Bring AI Into Your Design System certificate thumbnail"
+                             loading="lazy">
+                        <div class="cert-card-body">
+                            <div class="cert-card-head">
+                                <span class="cert-card-tag">Masterclass</span>
+                                <span class="cert-card-year">2026</span>
+                            </div>
+                            <p class="cert-card-title">Bring AI Into Your Design System</p>
+                            <div class="cert-card-foot">
+                                <span class="cert-card-issuer">IxDF</span>
+                                <span class="cert-card-hint">View ↗</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="cert-card"
+                             data-cert-img="Digital Accessibility Design certificate.png"
+                             tabindex="0" role="button"
+                             aria-label="View Digital Accessibility Design certificate">
+                        <img class="cert-thumb"
+                             src="Digital Accessibility Design certificate_thumb.jpg"
+                             alt="Digital Accessibility Design certificate thumbnail"
+                             loading="lazy">
+                        <div class="cert-card-body">
+                            <div class="cert-card-head">
+                                <span class="cert-card-tag">Certificate</span>
+                                <span class="cert-card-year">2026</span>
+                            </div>
+                            <p class="cert-card-title">Digital Accessibility Design</p>
+                            <div class="cert-card-foot">
+                                <span class="cert-card-issuer">Accenture · Percipio</span>
+                                <span class="cert-card-hint">View ↗</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="cert-card"
+                             data-cert-img="Digital Skill_Mobile Certificate.png"
+                             tabindex="0" role="button"
+                             aria-label="View Digital Skills: Mobile certificate">
+                        <img class="cert-thumb"
+                             src="Digital Skill_Mobile Certificate.png"
+                             alt="Digital Skills: Mobile certificate thumbnail"
+                             loading="lazy">
+                        <div class="cert-card-body">
+                            <div class="cert-card-head">
+                                <span class="cert-card-tag">Certificate</span>
+                                <span class="cert-card-year">2026</span>
+                            </div>
+                            <p class="cert-card-title">Digital Skills: Mobile</p>
+                            <div class="cert-card-foot">
+                                <span class="cert-card-issuer">FutureLearn · Accenture</span>
+                                <span class="cert-card-hint">View ↗</span>
+                            </div>
+                        </div>
+                    </article>
+
+                </div><!-- /.cert-carousel -->
+            </div><!-- /.cert-carousel-outer -->
         </div>
     </div>
 </section>
@@ -3261,160 +3756,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-
                 </button>
             </div>
         </div><!-- /tes-stage -->
-    </div>
-</section>
-
-
-<!-- ══ CERTIFICATIONS ══════════════════════════════════════ -->
-<section id="certifications" aria-labelledby="certifications-heading">
-    <div class="container">
-        <div class="section-head reveal-scale">
-            <span class="s-label">Learning &amp; Growth</span>
-            <h2 id="certifications-heading">Certifications &amp; Education</h2>
-            <div class="s-rule" aria-hidden="true">
-                <span class="s-rule-line"></span>
-                <span class="s-rule-sym">✦</span>
-                <span class="s-rule-line"></span>
-            </div>
-        </div>
-
-        <!-- ── Academics sub-section ── -->
-        <div class="cred-sub">
-            <div class="cred-sub-title">
-                <h3>Academics</h3>
-            </div>
-            <div class="acad-grid">
-
-                <article class="cred-card">
-                    <div class="cred-head">
-                        <span class="cred-tag">Degree</span>
-                        <span class="cred-year">2017</span>
-                    </div>
-                    <p class="cred-title">B.E. in Electronics &amp; Communication Engineering</p>
-                    <div class="cred-foot">
-                        <span class="cred-issuer">Supreme Knowledge Foundation Group Of Institutions</span>
-                    </div>
-                </article>
-
-            </div>
-        </div>
-
-        <!-- ── Certifications carousel sub-section ── -->
-        <div class="cred-sub">
-            <div class="cred-sub-title">
-                <h3>Certifications</h3>
-            </div>
-            <div class="cert-carousel-outer">
-                <div class="cert-carousel">
-
-                    <article class="cert-card"
-                             data-cert-img="Advance UI UX Certificate_clean.jpg"
-                             tabindex="0" role="button"
-                             aria-label="View Advanced Certification in UI/UX Design certificate">
-                        <img class="cert-thumb"
-                             src="Advance UI UX Certificate_clean.jpg"
-                             alt="Advanced Certification in UI/UX Design certificate thumbnail"
-                             loading="lazy">
-                        <div class="cert-card-body">
-                            <div class="cert-card-head">
-                                <span class="cert-card-tag">Certification</span>
-                                <span class="cert-card-year">2024</span>
-                            </div>
-                            <p class="cert-card-title">Advanced Certification in UI/UX Design</p>
-                            <div class="cert-card-foot">
-                                <span class="cert-card-issuer">IIIT Bangalore</span>
-                                <span class="cert-card-hint">View ↗</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="cert-card"
-                             data-cert-img="Reinvention aith Agentic AI certificate.png"
-                             tabindex="0" role="button"
-                             aria-label="View Reinvention with Agentic AI certificate">
-                        <img class="cert-thumb"
-                             src="Reinvention aith Agentic AI certificate.png"
-                             alt="Reinvention with Agentic AI certificate thumbnail"
-                             loading="lazy">
-                        <div class="cert-card-body">
-                            <div class="cert-card-head">
-                                <span class="cert-card-tag">Badge</span>
-                                <span class="cert-card-year">2025</span>
-                            </div>
-                            <p class="cert-card-title">Reinvention with Agentic AI</p>
-                            <div class="cert-card-foot">
-                                <span class="cert-card-issuer">Accenture</span>
-                                <span class="cert-card-hint">View ↗</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="cert-card"
-                             data-cert-img="IXDF Certificate.png"
-                             tabindex="0" role="button"
-                             aria-label="View Bring AI Into Your Design System certificate">
-                        <img class="cert-thumb"
-                             src="IXDF Certificate.png"
-                             alt="Bring AI Into Your Design System certificate thumbnail"
-                             loading="lazy">
-                        <div class="cert-card-body">
-                            <div class="cert-card-head">
-                                <span class="cert-card-tag">Masterclass</span>
-                                <span class="cert-card-year">2026</span>
-                            </div>
-                            <p class="cert-card-title">Bring AI Into Your Design System</p>
-                            <div class="cert-card-foot">
-                                <span class="cert-card-issuer">IxDF</span>
-                                <span class="cert-card-hint">View ↗</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="cert-card"
-                             data-cert-img="Digital Accessibility Design certificate.png"
-                             tabindex="0" role="button"
-                             aria-label="View Digital Accessibility Design certificate">
-                        <img class="cert-thumb"
-                             src="Digital Accessibility Design certificate_thumb.jpg"
-                             alt="Digital Accessibility Design certificate thumbnail"
-                             loading="lazy">
-                        <div class="cert-card-body">
-                            <div class="cert-card-head">
-                                <span class="cert-card-tag">Certificate</span>
-                                <span class="cert-card-year">2026</span>
-                            </div>
-                            <p class="cert-card-title">Digital Accessibility Design</p>
-                            <div class="cert-card-foot">
-                                <span class="cert-card-issuer">Accenture · Percipio</span>
-                                <span class="cert-card-hint">View ↗</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="cert-card"
-                             data-cert-img="Digital Skill_Mobile Certificate.png"
-                             tabindex="0" role="button"
-                             aria-label="View Digital Skills: Mobile certificate">
-                        <img class="cert-thumb"
-                             src="Digital Skill_Mobile Certificate.png"
-                             alt="Digital Skills: Mobile certificate thumbnail"
-                             loading="lazy">
-                        <div class="cert-card-body">
-                            <div class="cert-card-head">
-                                <span class="cert-card-tag">Certificate</span>
-                                <span class="cert-card-year">2026</span>
-                            </div>
-                            <p class="cert-card-title">Digital Skills: Mobile</p>
-                            <div class="cert-card-foot">
-                                <span class="cert-card-issuer">FutureLearn · Accenture</span>
-                                <span class="cert-card-hint">View ↗</span>
-                            </div>
-                        </div>
-                    </article>
-
-                </div><!-- /.cert-carousel -->
-            </div><!-- /.cert-carousel-outer -->
-        </div>
     </div>
 </section>
 
@@ -3697,12 +4038,11 @@ mobNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobNa
     if (!section) return;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduced) { section.classList.add('approach-in'); return; }
-    const threshold = window.innerWidth < 768 ? 0.08 : 0.4;
+    const threshold = window.innerWidth < 768 ? 0.08 : 0.3;
     const io = new IntersectionObserver(([e]) => {
-        if (e.isIntersecting) {
-            section.classList.add('approach-in');
-            io.disconnect();
-        }
+        // Replay the step sequence each time the section enters; reset when it leaves.
+        if (e.isIntersecting) section.classList.add('approach-in');
+        else section.classList.remove('approach-in');
     }, { threshold, rootMargin: '0px 0px -60px 0px' });
     io.observe(section);
 })();
@@ -3782,7 +4122,7 @@ mobNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobNa
 /* ── Credentials: academic stagger reveal + cert lightbox ── */
 (function () {
     /* Academic cards: staggered scroll reveal */
-    const acadCards = Array.from(document.querySelectorAll('.acad-grid .cred-card'));
+    const acadCards = Array.from(document.querySelectorAll('.exp-grid .cred-card, .acad-grid .cred-card'));
     if (acadCards.length) {
         const io = new IntersectionObserver(entries => {
             entries.forEach(entry => {
@@ -3945,7 +4285,7 @@ mobNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobNa
 
 /* ── Active nav link on scroll ── */
 (function () {
-    const ids   = ['hero', 'approach', 'work', 'about', 'testimonials', 'certifications', 'contact'];
+    const ids   = ['hero', 'approach', 'work', 'about', 'certifications', 'testimonials', 'contact'];
     const links = document.querySelectorAll('.nav-links a[href^="#"]');
     function update() {
         const y = window.scrollY + 120;
@@ -3992,6 +4332,7 @@ mobNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobNa
 
     document.addEventListener('DOMContentLoaded', function () {
         initOverlay('phonePeLink',  'phonePeCaseStudy',  null,           'phonePeCloseX');
+        initOverlay('cashSenseLink','cashSenseCaseStudy', null,          'cashSenseCloseX');
         initOverlay('optiviseLink', 'optiviseCaseStudy', null,           'optiviseCloseX');
         initOverlay('pricingLink',  'pricingCaseStudy',  'pricingBack',  'pricingCloseX');
         initOverlay('loanLink',     'loanCaseStudy',     'loanBack',     'loanCloseX');
@@ -4002,11 +4343,31 @@ mobNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobNa
             const slot = document.getElementById('phonePeProtoSlot');
             if (!slot) return;
             const iframe = slot.querySelector('iframe');
-            const VW = 390; // logical phone viewport width the iframe renders at
+            const VW = 470; // framed device viewport — black phone centred, fills the tile
             function fit() {
                 const w = slot.clientWidth;
                 if (!w) return;                 // hidden (overlay closed) → skip
                 const scale = w / VW;
+                iframe.style.transform = 'scale(' + scale + ')';
+                iframe.style.height = (slot.clientHeight / scale) + 'px';
+            }
+            if ('ResizeObserver' in window) new ResizeObserver(fit).observe(slot);
+            window.addEventListener('resize', fit);
+            fit();
+        })();
+
+        /* Fit the live CashSense prototype into the Solution-section phone screen:
+           render at a 390px phone viewport and scale to fill the screen slot exactly. */
+        (function () {
+            const slot = document.getElementById('cashSenseProtoSlot');
+            if (!slot) return;
+            const iframe = slot.querySelector('iframe');
+            const VW = 480; // framed device viewport — phone centred on its gradient, fills the tile
+            function fit() {
+                const w = slot.clientWidth;
+                if (!w) return;                 // hidden (overlay closed) → skip
+                const scale = w / VW;
+                iframe.style.width = VW + 'px';
                 iframe.style.transform = 'scale(' + scale + ')';
                 iframe.style.height = (slot.clientHeight / scale) + 'px';
             }
@@ -4073,7 +4434,352 @@ mobNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobNa
 </script>
 
 
+<!-- ══════════════════════════════════════════════════════════════
+     ASK-ANISHA — voice-enabled assistant
+     ══════════════════════════════════════════════════════════════ -->
+<button class="aa-launcher" id="aaLauncher" aria-label="Open Ask Anisha — voice assistant" aria-expanded="false" aria-controls="aaPanel" hidden style="display:none">
+    <span class="aa-launcher-avatar" aria-hidden="true">
+        <img src="IMG-20251111-WA0006.jpg" alt="" onerror="this.style.display='none'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+    </span>
+    <span class="aa-launcher-text"><b>Ask Anisha</b><span>Voice assistant</span></span>
+</button>
 
+<section class="aa-panel" id="aaPanel" role="dialog" aria-modal="false" aria-labelledby="aaTitle" aria-hidden="true" hidden style="display:none">
+    <header class="aa-head">
+        <span class="aa-head-avatar" aria-hidden="true"><img src="IMG-20251111-WA0006.jpg" alt="" onerror="this.parentNode.style.display='none'"></span>
+        <span class="aa-head-meta">
+            <b id="aaTitle">Ask Anisha</b>
+            <span>Available · answers in voice</span>
+        </span>
+        <button class="aa-iconbtn" id="aaMute" aria-label="Mute voice" aria-pressed="false" title="Mute voice">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+        </button>
+        <button class="aa-iconbtn" id="aaClose" aria-label="Close assistant">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+    </header>
+    <div class="aa-log" id="aaLog" role="log" aria-live="polite" aria-atomic="false"></div>
+    <div class="aa-chips" id="aaChips"></div>
+    <form class="aa-inputrow" id="aaForm">
+        <input class="aa-input" id="aaInput" type="text" autocomplete="off" placeholder="Ask me anything about Anisha…" aria-label="Type your question">
+        <button class="aa-mic" id="aaMic" type="button" aria-label="Ask by voice" title="Ask by voice">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+        </button>
+        <button class="aa-send" id="aaSend" type="submit" aria-label="Send question">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+    </form>
+</section>
+
+<script>
+/* ── Ask-Anisha — scripted voice assistant (no backend, no API key) ──
+   Structured for future upgrades: getAnswer() and speak() are async, so a
+   real LLM endpoint or premium TTS can be swapped in without touching callers. */
+(function () {
+    const launcher = document.getElementById('aaLauncher');
+    const panel = document.getElementById('aaPanel');
+    const log = document.getElementById('aaLog');
+    const chipsBox = document.getElementById('aaChips');
+    const form = document.getElementById('aaForm');
+    const input = document.getElementById('aaInput');
+    const micBtn = document.getElementById('aaMic');
+    const muteBtn = document.getElementById('aaMute');
+    const closeBtn = document.getElementById('aaClose');
+    if (!launcher || !panel) return;
+
+    /* ── Knowledge base — drawn from the page so bot & site never disagree ── */
+    const KB = [
+        { keys: ['who','about','yourself','introduce','tell me about','what do you do','anisha'],
+          a: "I'm Anisha Samanta, a Product and UI/UX Designer based in Bengaluru, India. I bring 3+ years of design experience plus 8+ years in enterprise technology — so I love turning complex workflows into intuitive, scalable products.",
+          c: ['What are your skills?','Tell me about your work','How can I contact you?'] },
+        { keys: ['experience','background','career','journey','years','how long','worked'],
+          a: "My path went from an engineering degree, to an IT Analyst role, and then into UI/UX design. Along the way I've shaped 50+ experiences across healthcare, fintech, banking, transport and hospitality.",
+          c: ['What are your skills?','What projects have you done?','Where did you study?'] },
+        { keys: ['skill','expertise','good at','strength','speciali','design system','tools','capab'],
+          a: "I specialise in enterprise SaaS, fintech and AI-powered products. That means user research, product strategy, design systems, interaction design and high-fidelity prototyping.",
+          c: ['Tell me about your projects','Do you work with AI?','How can I hire you?'] },
+        { keys: ['project','work','case study','portfolio','phonepe','optivise','built','designed'],
+          a: "My featured work includes the PhonePe Gold redesign and Optivise, among others. Scroll up to the Work section to flip through the case studies — each one walks through the problem, process and outcome.",
+          c: ['What are your skills?','Do you work with AI?','How can I contact you?'] },
+        { keys: ['ai','agentic','artificial intelligence','machine learning'],
+          a: "Yes! I design AI-powered products and recently earned an Agentic AI badge from Accenture in 2025. This voice assistant you're talking to is a little taste of that interest.",
+          c: ['Tell me about your projects','What are your certifications?','How can I hire you?'] },
+        { keys: ['cert','education','study','degree','qualif','course','iiit','learn','school','college'],
+          a: "I hold an Advanced Certification in UI/UX Design from IIIT Bangalore (2024) and an Agentic AI badge from Accenture (2025), on top of my engineering background. You'll find the full list in the Certifications section.",
+          c: ['Tell me about your experience','What are your skills?','How can I contact you?'] },
+        { keys: ['contact','hire','email','reach','available','work with','get in touch','message','talk'],
+          a: "I'd love to connect — I'm currently available for work. The best way is email at anishasamanta331@gmail.com, or use the Contact section to say hello.",
+          c: ['Where are you based?','Find me on LinkedIn','What do you do?'] },
+        { keys: ['linkedin','dribbble','behance','social','follow','profile'],
+          a: "You can find me on LinkedIn, Dribbble and Behance — all linked in the footer at the bottom of the page. I post my latest design work there.",
+          c: ['How can I contact you?','Tell me about your projects','Who are you?'] },
+        { keys: ['location','based','where','city','live','bengaluru','bangalore','india'],
+          a: "I'm based in Bengaluru, India, and open to remote collaboration around the world.",
+          c: ['How can I contact you?','Are you available?','What do you do?'] },
+        { keys: ['hobby','hobbies','interest','beyond','fun','free time','outside','passion'],
+          a: "Beyond design, I love reading, trekking, dancing, photography, sketching and handcrafting — they keep my creativity fresh.",
+          c: ['Who are you?','Tell me about your work','How can I contact you?'] },
+        { keys: ['resume','cv','download'],
+          a: "You can download my full resume from the Hero or Contact section — just look for the resume button. It covers my experience, skills and projects in detail.",
+          c: ['What are your skills?','Tell me about your experience','How can I contact you?'] },
+        { keys: ['hi','hello','hey','greetings','yo','namaste','good morning','good evening'],
+          a: "Hi there! 👋 I'm Anisha's voice assistant. Ask me anything about her work, skills, experience or how to get in touch.",
+          c: ['Who is Anisha?','What are her skills?','How can I contact her?'] },
+        { keys: ['thank','thanks','cool','awesome','great','nice','bye','goodbye'],
+          a: "You're very welcome! If you'd like to work with Anisha, reach out at anishasamanta331@gmail.com. Thanks for stopping by. 🌿",
+          c: ['How can I contact you?','Tell me about your projects','Who are you?'] }
+    ];
+    const FALLBACK = {
+        a: "That's a great question — I don't have a scripted answer for it yet. For anything specific, Anisha would love to hear from you directly at anishasamanta331@gmail.com. Meanwhile, here's what I can help with:",
+        c: ['Who is Anisha?','What are her skills?','Tell me about her work','How can I contact her?']
+    };
+    const STARTERS = ['Who is Anisha?','What are your skills?','Tell me about your work','How can I contact you?'];
+
+    /* ── Answer engine (async so a real LLM can replace it later) ── */
+    async function getAnswer(text) {
+        const q = ' ' + text.toLowerCase().replace(/[^\w\s]/g, ' ').replace(/\s+/g, ' ') + ' ';
+        let best = null, bestScore = 0;
+        for (const item of KB) {
+            let score = 0;
+            for (const k of item.keys) { if (q.includes(' ' + k + ' ') || q.includes(k)) score += k.split(' ').length; }
+            if (score > bestScore) { bestScore = score; best = item; }
+        }
+        return bestScore > 0 ? best : FALLBACK;
+    }
+
+    /* ── Voice output (async so premium TTS can replace it later) ── */
+    let muted = false;
+    const synth = window.speechSynthesis;
+    function pickVoice() {
+        if (!synth) return null;
+        const en = synth.getVoices().filter(v => /^en/i.test(v.lang));
+        if (!en.length) return null;
+        // Never use these (male / robotic)
+        const male = /daniel|alex|fred|rishi|gordon|oliver|thomas|aaron|arthur|male|reed|albert|bad news|bahh|bells|boing|bubbles|cellos|jester|organ|trinoids|whisper|wobble|zarvox|junior|ralph/i;
+        const notMale = en.filter(v => !male.test(v.name));
+        // 1) Prefer Indian-English female voices by name…
+        const indianNames = ['veena','sangeeta','heera','isha','priya','neerja','aditi','raveena','ananya','google हिन्दी','google india'];
+        for (const name of indianNames) {
+            const hit = notMale.find(v => v.name.toLowerCase().includes(name));
+            if (hit) return hit;
+        }
+        // 2) …then any en-IN (Indian English) female-ish voice
+        const enIN = notMale.find(v => /en[-_]?IN/i.test(v.lang));
+        if (enIN) return enIN;
+        // 3) …otherwise a natural female voice, in order
+        const preferred = ['samantha','ava','allison','susan','zoe','google us english','google uk english female',
+            'serena','karen','catherine','victoria','moira','tessa','fiona','aria','jenny','michelle','female'];
+        for (const name of preferred) {
+            const hit = notMale.find(v => v.name.toLowerCase().includes(name));
+            if (hit) return hit;
+        }
+        return notMale[0] || null;
+    }
+    async function speak(text) {
+        if (muted || !synth) return;
+        synth.cancel();
+        const clean = text.replace(/[👋🌿]/g, '').replace(/\s+/g, ' ').trim();
+        const u = new SpeechSynthesisUtterance(clean);
+        const v = pickVoice(); if (v) { u.voice = v; u.lang = v.lang; }
+        // Softer, more conversational delivery
+        u.rate = 0.92; u.pitch = 1.08; u.volume = 1;
+        synth.speak(u);
+    }
+
+    /* ── Rendering ── */
+    function addMsg(text, who) {
+        const el = document.createElement('div');
+        el.className = 'aa-msg aa-' + who;
+        el.textContent = text;
+        log.appendChild(el);
+        log.scrollTop = log.scrollHeight;
+        return el;
+    }
+    function showTyping() {
+        const t = document.createElement('div');
+        t.className = 'aa-typing'; t.innerHTML = '<span></span><span></span><span></span>';
+        log.appendChild(t); log.scrollTop = log.scrollHeight;
+        return t;
+    }
+    function renderChips(list) {
+        chipsBox.innerHTML = '';
+        list.forEach(label => {
+            const b = document.createElement('button');
+            b.type = 'button'; b.className = 'aa-chip'; b.textContent = label;
+            b.addEventListener('click', () => ask(label));
+            chipsBox.appendChild(b);
+        });
+    }
+
+    let busy = false;
+    async function ask(text) {
+        text = text.trim();
+        if (!text || busy) return;
+        busy = true;
+        addMsg(text, 'user');
+        input.value = '';
+        const typing = showTyping();
+        const res = await getAnswer(text);
+        await new Promise(r => setTimeout(r, 450));
+        typing.remove();
+        addMsg(res.a, 'bot');
+        renderChips(res.c || STARTERS);
+        speak(res.a);
+        busy = false;
+    }
+
+    /* ── Open / close ── */
+    let opened = false;
+    function open() {
+        panel.classList.add('aa-open');
+        panel.setAttribute('aria-hidden', 'false');
+        launcher.classList.add('aa-hidden');
+        launcher.setAttribute('aria-expanded', 'true');
+        if (!opened) {
+            opened = true;
+            const greet = KB.find(k => k.keys.includes('hi'));
+            addMsg(greet.a, 'bot');
+            renderChips(STARTERS);
+            speak(greet.a);
+        }
+        setTimeout(() => input.focus(), 320);
+    }
+    function close() {
+        panel.classList.remove('aa-open');
+        panel.setAttribute('aria-hidden', 'true');
+        launcher.classList.remove('aa-hidden');
+        launcher.setAttribute('aria-expanded', 'false');
+        if (synth) synth.cancel();
+        launcher.focus();
+    }
+    launcher.addEventListener('click', open);
+    closeBtn.addEventListener('click', close);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && panel.classList.contains('aa-open')) close(); });
+
+    muteBtn.addEventListener('click', () => {
+        muted = !muted;
+        muteBtn.classList.toggle('aa-muted', muted);
+        muteBtn.setAttribute('aria-pressed', String(muted));
+        muteBtn.setAttribute('aria-label', muted ? 'Unmute voice' : 'Mute voice');
+        if (muted && synth) synth.cancel();
+    });
+
+    form.addEventListener('submit', e => { e.preventDefault(); ask(input.value); });
+
+    /* ── Voice input (graceful degradation if unsupported) ── */
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SR) {
+        const rec = new SR();
+        rec.lang = 'en-US'; rec.interimResults = true; rec.continuous = false;
+        let listening = false;
+        micBtn.addEventListener('click', () => { listening ? rec.stop() : rec.start(); });
+        rec.onstart = () => { listening = true; micBtn.classList.add('aa-listening'); if (synth) synth.cancel(); };
+        rec.onend = () => { listening = false; micBtn.classList.remove('aa-listening'); };
+        rec.onerror = () => { listening = false; micBtn.classList.remove('aa-listening'); };
+        rec.onresult = e => {
+            const txt = Array.from(e.results).map(r => r[0].transcript).join('');
+            input.value = txt;
+            if (e.results[e.results.length - 1].isFinal) { rec.stop(); ask(txt); }
+        };
+    } else {
+        micBtn.style.display = 'none';
+    }
+
+    /* Warm up voice list (some browsers load voices async) */
+    if (synth && synth.onvoiceschanged !== undefined) synth.onvoiceschanged = pickVoice;
+})();
+</script>
+
+
+
+                        </div>
+                    </div>
+                </div>
+                <div class="cs-overlay-footer-bottom">
+                    <p>© 2025 Anisha Samanta. Crafted with care.</p>
+                    <p>Product &amp; UI/UX Designer</p>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     CASHSENSE CASE STUDY OVERLAY
+     ══════════════════════════════════════════════════════════════ -->
+<div class="cs-overlay" id="cashSenseCaseStudy" role="dialog" aria-modal="true" aria-labelledby="cashsense-cs-title" aria-hidden="true">
+    <div class="cs-overlay-inner">
+        <h2 id="cashsense-cs-title" class="sr-only">CashSense — Restoring spending awareness in UPI through behavioural design</h2>
+        <div class="cs-overlay-topbar">
+            <div class="container">
+                <button class="cs-close-x" id="cashSenseCloseX" aria-label="Close CashSense case study">✕</button>
+            </div>
+        </div>
+
+        <div class="cs-overlay-body" style="padding:0;">
+            <div class="cashsense-frame-wrap" style="position:relative;width:100%;">
+                <img src="CashSense_case_study.png" alt="CashSense — Restoring spending awareness in UPI through behavioural design case study" style="width:100%;height:auto;display:block;">
+                <!-- Live prototype in its realistic device frame, shown as a showcase tile
+                     over the still phone in the Solution section. The framed app (its own
+                     bezel + soft gradient) renders at a 480px viewport, scaled to fill (see scaler JS). -->
+                <div class="cashsense-device-screen" id="cashSenseProtoSlot" style="position:absolute;left:59.7%;top:57.45%;width:33%;height:6.34%;border-radius:22px;overflow:hidden;background:#e3ddef;box-shadow:0 30px 70px rgba(40,20,80,0.20);">
+                    <iframe class="cashsense-proto" title="CashSense interactive prototype — full device"
+                            src="prototypes/cashsense/index.html"
+                            loading="lazy" allow="clipboard-read; clipboard-write; web-share"
+                            style="position:absolute;top:0;left:0;width:480px;height:940px;border:0;transform-origin:top left;transform:scale(var(--cs-proto-scale,1));"></iframe>
+                </div>
+                <!-- Live "tap to try" hint above the embedded prototype -->
+                <style>
+                .cs-try-hint {
+                    position: absolute; left: 76.2%; top: 56.75%; transform: translateX(-50%);
+                    display: inline-flex; align-items: center; gap: 7px;
+                    background: #1a1a2e; color: #fff; font-family: var(--body);
+                    font-size: 13px; font-weight: 600; letter-spacing: 0.2px; white-space: nowrap;
+                    padding: 7px 13px; border-radius: 999px;
+                    box-shadow: 0 10px 24px rgba(20,8,40,0.30); pointer-events: none; z-index: 5;
+                }
+                .cs-try-hint::after {
+                    content: ""; position: absolute; left: 50%; bottom: -4px;
+                    transform: translateX(-50%) rotate(45deg);
+                    width: 10px; height: 10px; background: #1a1a2e; border-radius: 2px;
+                }
+                .cs-try-dot {
+                    width: 8px; height: 8px; border-radius: 50%; background: #22c55e;
+                    animation: cs-try-pulse 1.6s ease-out infinite;
+                }
+                @keyframes cs-try-pulse {
+                    0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0.55); }
+                    70%  { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
+                    100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+                }
+                @media (prefers-reduced-motion: reduce) { .cs-try-dot { animation: none; } }
+                </style>
+                <div class="cs-try-hint"><span class="cs-try-dot"></span>Live — tap to try</div>
+            </div>
+        </div>
+
+        <footer class="cs-overlay-footer">
+            <div class="container">
+                <div class="cs-overlay-footer-grid">
+                    <div>
+                        <p class="cs-overlay-footer-eyebrow">Get in touch</p>
+                        <h3 class="cs-overlay-footer-heading">Let's create something great together</h3>
+                        <a href="mailto:anishasamanta331@gmail.com" class="cs-overlay-footer-email">anishasamanta331@gmail.com</a>
+                    </div>
+                    <div>
+                        <p class="cs-overlay-social-label">Find me on</p>
+                        <div class="social-links">
+                            <a href="https://www.linkedin.com/in/anisha-samanta-professional/" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                                LinkedIn
+                            </a>
+                            <a href="https://www.behance.net/anishasamanta27" class="social-link" target="_blank" rel="noopener" aria-label="Behance">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 7h-7V5h7v2zm1.726 10c-.442 1.297-2.029 3-5.101 3-3.074 0-5.564-1.729-5.564-5.675 0-3.91 2.325-5.92 5.466-5.92 3.082 0 4.964 1.782 5.375 4.426.078.506.109 1.188.095 2.14H15.97c.13 3.211 3.483 3.312 4.588 2.029H23.726zm-7.518-4h4.463c-.07-1.542-1.087-2.288-2.17-2.288-1.238 0-2.127.837-2.293 2.288zM8 11.1c1.359 0 2.4-.819 2.4-2.1 0-1.31-1.04-2.1-2.4-2.1H2v4.2h6zM2 14v4.2h6.2c1.453 0 2.6-.929 2.6-2.1S9.653 14 8.2 14H2z"/></svg>
+                                Behance
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -4101,7 +4807,7 @@ mobNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobNa
         </div>
 
         <div class="cs-overlay-body" style="padding:0;">
-            <img src="Frame 6207.png" alt="Website Redesign — Optivise Consulting case study" style="width:100%;height:auto;display:block;filter:sepia(0.28) contrast(1.04) brightness(0.96) saturate(0.85);">
+            <img src="Frame 6207.png" alt="Website Redesign — Optivise Consulting case study" style="width:100%;height:auto;display:block;">
         </div>
 
         <footer class="cs-overlay-footer">
@@ -4150,7 +4856,7 @@ mobNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobNa
         </div>
 
         <div class="cs-overlay-body" style="padding:0;">
-            <img src="Pricing_optimization.png" alt="AI Pricing Optimization case study" style="width:100%;height:auto;display:block;filter:sepia(0.28) contrast(1.04) brightness(0.96) saturate(0.85);">
+            <img src="Pricing_optimization.png" alt="AI Pricing Optimization case study" style="width:100%;height:auto;display:block;">
         </div>
 
         <footer class="cs-overlay-footer">
@@ -4199,7 +4905,7 @@ mobNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobNa
         </div>
 
         <div class="cs-overlay-body" style="padding:0;">
-            <img src="loan decision.png" alt="Agentic AI System for Smart Loan Decisions case study" style="width:100%;height:auto;display:block;filter:sepia(0.28) contrast(1.04) brightness(0.96) saturate(0.85);">
+            <img src="loan decision.png" alt="Agentic AI System for Smart Loan Decisions case study" style="width:100%;height:auto;display:block;">
         </div>
 
         <footer class="cs-overlay-footer">
@@ -4249,18 +4955,37 @@ mobNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobNa
 
         <div class="cs-overlay-body" style="padding:0;">
             <div class="phonepe-frame-wrap" style="position:relative;width:100%;">
-                <img src="Frame 15.svg" alt="PhonePe Digital Gold Adoption case study" style="width:100%;height:auto;display:block;filter:sepia(0.28) contrast(1.04) brightness(0.96) saturate(0.85);">
-                <!-- Live prototype sitting in the cover's screen rect, matching the flat design:
-                     slim dark bezel, rounded corners, gentle shadow (no chunky body / no notch).
-                     The screen renders at a real 390px phone viewport, scaled to fill exactly (see scaleProto JS). -->
-                <div class="phonepe-device" style="position:absolute;left:35.4%;top:2.30%;width:29.2%;height:3.37%;background:#14141a;border-radius:10.5%/5.1%;padding:1.25%;box-sizing:border-box;box-shadow:0 6px 18px rgba(20,8,40,.35);">
-                    <div class="phonepe-device-screen" id="phonePeProtoSlot" style="position:relative;width:100%;height:100%;border-radius:8%/3.9%;overflow:hidden;background:#000;">
-                        <iframe class="phonepe-proto" title="PhonePe Gold interactive prototype"
-                                src="https://anishasamanta-design.github.io/Phonepe-Gold-Silver/"
-                                loading="lazy" allow="clipboard-read; clipboard-write"
-                                style="width:390px;height:832px;border:0;display:block;transform-origin:top left;transform:scale(var(--proto-scale,1));"></iframe>
-                    </div>
+                <img src="Frame 15.png" alt="PhonePe Digital Gold Adoption case study" style="width:100%;height:auto;display:block;">
+                <!-- Live prototype in its realistic black device mockup, on a transparent
+                     background so it sits cleanly on the cover (fully covering the still phone).
+                     Renders the full framed app at a 470px viewport, scaled to fill. -->
+                <div class="phonepe-device-screen" id="phonePeProtoSlot" style="position:absolute;left:32.75%;top:2.36%;width:34.5%;height:4.22%;overflow:hidden;background:transparent;">
+                    <iframe class="phonepe-proto" title="PhonePe Gold interactive prototype — full device"
+                            src="prototypes/phonepe-gold/index.html?embed"
+                            loading="lazy" allow="clipboard-read; clipboard-write"
+                            style="position:absolute;top:0;left:0;width:470px;height:950px;border:0;transform-origin:top left;transform:scale(var(--proto-scale,1));"></iframe>
                 </div>
+                <!-- "Live · try it" hint pointing at the prototype -->
+                <style>
+                .ppe-try-hint {
+                    position: absolute; left: 50%; top: 2.12%; transform: translateX(-50%);
+                    display: inline-flex; align-items: center; gap: 7px;
+                    background: #fff; color: #1a1a2e; font-family: var(--body);
+                    font-size: 13px; font-weight: 600; letter-spacing: 0.2px; white-space: nowrap;
+                    padding: 7px 13px; border-radius: 999px;
+                    box-shadow: 0 10px 24px rgba(0,0,0,0.28); pointer-events: none; z-index: 6;
+                }
+                .ppe-try-hint::after {
+                    content: ""; position: absolute; left: 50%; bottom: -4px;
+                    transform: translateX(-50%) rotate(45deg);
+                    width: 10px; height: 10px; background: #fff; border-radius: 2px;
+                }
+                .ppe-try-dot {
+                    width: 8px; height: 8px; border-radius: 50%; background: #16a34a;
+                    animation: cs-try-pulse 1.6s ease-out infinite;
+                }
+                </style>
+                <div class="ppe-try-hint"><span class="ppe-try-dot"></span>Live · try it</div>
             </div>
         </div>
 
