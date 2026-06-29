@@ -3910,6 +3910,9 @@ mobNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobNa
 /* ── Resume: embedded PDF viewer + download ── */
 (function () {
     const FILE      = 'Anisha_Samanta_Resume2026.pdf';
+    // Cache-buster: the PDF filename never changes, so browsers/CDN cache it hard.
+    // Bump this whenever the resume is regenerated so the new file is fetched.
+    const URLV      = FILE + '?v=20260629b';
     const viewer    = document.getElementById('resumeLightbox');
     const backdrop  = document.getElementById('resumeLightboxBackdrop');
     const closeBtn  = document.getElementById('resumeLightboxClose');
@@ -3927,14 +3930,14 @@ mobNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobNa
         }
         /* XHR works on both http:// and file:// (status 0 = local file success) */
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', FILE, true);
+        xhr.open('GET', URLV, true);
         xhr.responseType = 'blob';
         xhr.onload = function() {
             if (xhr.status === 200 || xhr.status === 0) triggerDownload(xhr.response);
         };
         xhr.onerror = function() {
             const a = document.createElement('a');
-            a.href = FILE; a.download = FILE;
+            a.href = URLV; a.download = FILE;
             document.body.appendChild(a); a.click();
             setTimeout(() => document.body.removeChild(a), 200);
         };
@@ -3943,7 +3946,7 @@ mobNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobNa
 
     function openViewer() {
         trigger = document.activeElement;
-        if (!frame.src) frame.src = FILE + '#view=FitH';
+        if (!frame.src) frame.src = URLV + '#view=FitH';
         viewer.classList.add('is-open');
         viewer.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
