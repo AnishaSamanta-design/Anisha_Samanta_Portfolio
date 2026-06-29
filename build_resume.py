@@ -321,7 +321,7 @@ def build_pdf():
     link_html = "&nbsp;&nbsp;&#183;&nbsp;&nbsp;".join(
         f'<a href="{u}" color="#{ACCENT}"><u>{esc(t)}</u></a>' for t, u in LINKS)
     story.append(Paragraph(link_html, contact_style))
-    story.append(Spacer(1, 9))  # breathing room below the masthead before the body
+    story.append(Spacer(1, 10))  # breathing room below the masthead before the body
 
     story += section("Professional Summary")
     story.append(Paragraph(esc(SUMMARY), body_style))
@@ -355,10 +355,12 @@ def build_pdf():
     story.append(bullets(edu_items))
 
     # Editorial masthead drawn behind the real header text (ATS-safe — text stays selectable).
-    # Must fully contain the header flowables (name → links ≈ 1.43in from the top) with a
-    # small margin below the links; the body starts just after (topMargin + content + Spacer).
-    band_h = 1.50 * inch
+    # The header flowables (name → links) are vertically CENTERED inside the sand band, and the
+    # terracotta vertical rule spans that same block — so all details sit on one centred axis.
+    BLOCK = 78               # visible height (pt) of the name→links flowables
+    band_h = 1.36 * inch
     LM = 0.7 * inch
+    TOPM = (band_h - BLOCK) / 2.0   # equal sand margin above the name and below the links
 
     def draw_header_band(canvas, doc_):
         w, h = doc_.pagesize
@@ -369,15 +371,13 @@ def build_pdf():
         # warm hairline at the panel base
         canvas.setFillColor(rule)
         canvas.rect(0, h - band_h, w, 0.8, fill=1, stroke=0)
-        # tall editorial vertical terracotta rule beside the masthead
-        top_y = h - 0.30 * inch
-        bar_h = 64
+        # vertical terracotta rule spanning the centred header block
         canvas.setFillColor(accent)
-        canvas.rect(LM, top_y - bar_h, 3.4, bar_h, fill=1, stroke=0)
+        canvas.rect(LM, h - TOPM - BLOCK + 3, 3.4, BLOCK - 6, fill=1, stroke=0)
         canvas.restoreState()
 
     doc = SimpleDocTemplate(PDF_PATH, pagesize=letter,
-                            topMargin=0.32 * inch, bottomMargin=0.38 * inch,
+                            topMargin=TOPM, bottomMargin=0.38 * inch,
                             leftMargin=LM, rightMargin=0.7 * inch,
                             title="Anisha Samanta — UI/UX Designer Resume", author=NAME)
     doc.build(story, onFirstPage=draw_header_band)
