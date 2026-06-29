@@ -277,7 +277,7 @@ def build_pdf():
     styles = getSampleStyleSheet()
 
     HI = 15  # header indent — clears the vertical accent rule
-    HGAP = 10  # uniform gap (pt ≈ 13px) between header lines
+    HGAP = 6  # uniform gap (pt ≈ 8px) between header lines
     name_style = ParagraphStyle("name", parent=styles["Normal"], fontName="Helvetica-Bold",
                                 fontSize=26, textColor=ink, leading=27, spaceAfter=HGAP,
                                 alignment=TA_LEFT, leftIndent=HI)
@@ -359,8 +359,8 @@ def build_pdf():
     # The header flowables (name → links) are vertically CENTERED inside the sand band, and the
     # terracotta vertical rule spans that same block — so all details sit on one centred axis.
     # visible block = name(27) + gap + title(11) + gap + contact(11) + gap + links(11)
-    BLOCK = 27 + 11 + 11 + 11 + 3 * 10   # = 90 pt
-    band_h = 1.42 * inch
+    BLOCK = 27 + 11 + 11 + 11 + 3 * HGAP
+    band_h = 1.28 * inch
     LM = 0.7 * inch
     TOPM = (band_h - BLOCK) / 2.0   # equal sand margin above the name and below the links
 
