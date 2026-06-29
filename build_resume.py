@@ -355,7 +355,7 @@ def build_pdf():
     story.append(bullets(edu_items))
 
     # Editorial masthead drawn behind the real header text (ATS-safe — text stays selectable)
-    band_h = 1.55 * inch
+    band_h = 1.40 * inch
     LM = 0.7 * inch
 
     def draw_header_band(canvas, doc_):
@@ -368,14 +368,14 @@ def build_pdf():
         canvas.setFillColor(rule)
         canvas.rect(0, h - band_h, w, 0.8, fill=1, stroke=0)
         # tall editorial vertical terracotta rule beside the masthead
-        top_y = h - 0.34 * inch
-        bar_h = 70
+        top_y = h - 0.30 * inch
+        bar_h = 64
         canvas.setFillColor(accent)
         canvas.rect(LM, top_y - bar_h, 3.4, bar_h, fill=1, stroke=0)
         canvas.restoreState()
 
     doc = SimpleDocTemplate(PDF_PATH, pagesize=letter,
-                            topMargin=0.4 * inch, bottomMargin=0.38 * inch,
+                            topMargin=0.32 * inch, bottomMargin=0.38 * inch,
                             leftMargin=LM, rightMargin=0.7 * inch,
                             title="Anisha Samanta — UI/UX Designer Resume", author=NAME)
     doc.build(story, onFirstPage=draw_header_band)
