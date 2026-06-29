@@ -277,14 +277,15 @@ def build_pdf():
     styles = getSampleStyleSheet()
 
     HI = 15  # header indent — clears the vertical accent rule
+    HGAP = 10  # uniform gap (pt ≈ 13px) between header lines
     name_style = ParagraphStyle("name", parent=styles["Normal"], fontName="Helvetica-Bold",
-                                fontSize=26, textColor=ink, leading=28, spaceAfter=3,
+                                fontSize=26, textColor=ink, leading=27, spaceAfter=HGAP,
                                 alignment=TA_LEFT, leftIndent=HI)
     title_style = ParagraphStyle("title", parent=styles["Normal"], fontName="Helvetica-Bold",
-                                  fontSize=9.5, textColor=accent, leading=13, spaceAfter=7,
+                                  fontSize=9.5, textColor=accent, leading=11, spaceAfter=HGAP,
                                   alignment=TA_LEFT, leftIndent=HI)
     contact_style = ParagraphStyle("contact", parent=styles["Normal"], fontName="Helvetica",
-                                    fontSize=8.5, leading=12.5, spaceAfter=2,
+                                    fontSize=8.5, leading=11, spaceAfter=HGAP,
                                     alignment=TA_LEFT, leftIndent=HI, textColor=gray)
     sect_style = ParagraphStyle("sect", parent=styles["Normal"], fontName="Helvetica-Bold",
                                 fontSize=10.5, textColor=ink, leading=12, spaceBefore=4, spaceAfter=2)
@@ -321,7 +322,7 @@ def build_pdf():
     link_html = "&nbsp;&nbsp;&#183;&nbsp;&nbsp;".join(
         f'<a href="{u}" color="#{ACCENT}"><u>{esc(t)}</u></a>' for t, u in LINKS)
     story.append(Paragraph(link_html, contact_style))
-    story.append(Spacer(1, 10))  # breathing room below the masthead before the body
+    story.append(Spacer(1, 4))  # links already carries HGAP below it; small extra before body
 
     story += section("Professional Summary")
     story.append(Paragraph(esc(SUMMARY), body_style))
@@ -357,8 +358,9 @@ def build_pdf():
     # Editorial masthead drawn behind the real header text (ATS-safe — text stays selectable).
     # The header flowables (name → links) are vertically CENTERED inside the sand band, and the
     # terracotta vertical rule spans that same block — so all details sit on one centred axis.
-    BLOCK = 78               # visible height (pt) of the name→links flowables
-    band_h = 1.36 * inch
+    # visible block = name(27) + gap + title(11) + gap + contact(11) + gap + links(11)
+    BLOCK = 27 + 11 + 11 + 11 + 3 * 10   # = 90 pt
+    band_h = 1.42 * inch
     LM = 0.7 * inch
     TOPM = (band_h - BLOCK) / 2.0   # equal sand margin above the name and below the links
 
