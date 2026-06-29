@@ -23,8 +23,9 @@ SUMMARY = (
 
 SKILLS = [
     ("Design Tools", "Figma, Miro, Framer"),
-    ("Design", "Problem Solving, UX Research, Persona, Empathy Mapping, User Flow, Journey Mapping, "
-               "Information Architecture, Wireframing, Prototyping, Accessibility, Design Systems, Design Handoff"),
+    ("UX & Product Design", "UX Research, Product Thinking, User Flows, Information Architecture, "
+                            "Interaction Design, Wireframing, Prototyping, Journey Mapping, Accessibility, Design Systems"),
+    ("Technical Knowledge", "C, C++, HTML Fundamentals"),
     ("Languages", "English, Bengali, Hindi"),
 ]
 
