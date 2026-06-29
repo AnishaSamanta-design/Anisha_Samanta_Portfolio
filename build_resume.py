@@ -354,8 +354,10 @@ def build_pdf():
     edu_items = [f"<b>{esc(t)}</b> — {esc(d)}" for t, d in EDUCATION]
     story.append(bullets(edu_items))
 
-    # Editorial masthead drawn behind the real header text (ATS-safe — text stays selectable)
-    band_h = 1.40 * inch
+    # Editorial masthead drawn behind the real header text (ATS-safe — text stays selectable).
+    # Must fully contain the header flowables (name → links ≈ 1.43in from the top) with a
+    # small margin below the links; the body starts just after (topMargin + content + Spacer).
+    band_h = 1.50 * inch
     LM = 0.7 * inch
 
     def draw_header_band(canvas, doc_):
