@@ -4274,20 +4274,6 @@ mobNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobNa
     startTimer();
 })();
 
-/* ── Active nav link on scroll ── */
-(function () {
-    const ids   = ['hero', 'approach', 'work', 'about', 'certifications', 'testimonials', 'contact'];
-    const links = document.querySelectorAll('.nav-links a[href^="#"]');
-    function update() {
-        const y = window.scrollY + 120;
-        let cur = ids[0];
-        ids.forEach(id => { const el = document.getElementById(id); if (el && el.offsetTop <= y) cur = id; });
-        links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur && cur !== 'hero'));
-    }
-    window.addEventListener('scroll', update, { passive: true });
-    update();
-})();
-
 /* ── Case study overlays ── */
 (function () {
     function initOverlay(linkId, overlayId, backId, closeId) {
