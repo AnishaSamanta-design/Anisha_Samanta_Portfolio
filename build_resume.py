@@ -322,7 +322,7 @@ def build_pdf():
     link_html = "&nbsp;&nbsp;&#183;&nbsp;&nbsp;".join(
         f'<a href="{u}" color="#{ACCENT}"><u>{esc(t)}</u></a>' for t, u in LINKS)
     story.append(Paragraph(link_html, contact_style))
-    story.append(Spacer(1, 4))  # links already carries HGAP below it; small extra before body
+    story.append(Spacer(1, 6))  # clears the (now taller) masthead band before the body
 
     story += section("Professional Summary")
     story.append(Paragraph(esc(SUMMARY), body_style))
@@ -360,7 +360,9 @@ def build_pdf():
     # terracotta vertical rule spans that same block — so all details sit on one centred axis.
     # visible block = name(27) + gap + title(11) + gap + contact(11) + gap + links(11)
     BLOCK = 27 + 11 + 11 + 11 + 3 * HGAP
-    band_h = 1.28 * inch
+    # band taller than the block so the centred header has ~14px of balanced
+    # breathing room above the name and below the links (links no longer touch the border)
+    band_h = 1.38 * inch
     LM = 0.7 * inch
     TOPM = (band_h - BLOCK) / 2.0   # equal sand margin above the name and below the links
 
