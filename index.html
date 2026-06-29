@@ -4243,17 +4243,16 @@ mobNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobNa
     function next() { goTo(current + 1); }
     function prev() { goTo(current - 1); }
 
-    function startTimer() { clearInterval(autoTimer); autoTimer = setInterval(next, 4000); }
+    function startTimer() { clearInterval(autoTimer); autoTimer = setInterval(next, 3000); }
     function resetTimer() { startTimer(); }
 
     prevBtn.addEventListener('click', () => { prev(); resetTimer(); });
     nextBtn.addEventListener('click', () => { next(); resetTimer(); });
 
-    /* Pause only while hovering the front (active) card you're reading,
-       so the carousel keeps auto-sliding when the cursor is anywhere else. */
-    cards.forEach(card => {
-        card.addEventListener('mouseenter', () => { if (card.classList.contains('tc-active')) clearInterval(autoTimer); });
-        card.addEventListener('mouseleave', startTimer);
+    /* Keep it continuously moving: re-sync the timer if the tab was
+       backgrounded (browsers throttle/suspend intervals there). */
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') startTimer();
     });
 
     let touchX = 0;

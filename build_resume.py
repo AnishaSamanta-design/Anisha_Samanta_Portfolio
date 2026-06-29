@@ -287,9 +287,9 @@ def build_pdf():
                                     fontSize=8.5, leading=12.5, spaceAfter=2,
                                     alignment=TA_LEFT, leftIndent=HI, textColor=gray)
     sect_style = ParagraphStyle("sect", parent=styles["Normal"], fontName="Helvetica-Bold",
-                                fontSize=10.5, textColor=ink, leading=12, spaceBefore=6, spaceAfter=2)
+                                fontSize=10.5, textColor=ink, leading=12, spaceBefore=4, spaceAfter=2)
     sub_style = ParagraphStyle("sub", parent=styles["Normal"], fontName="Helvetica-BoldOblique",
-                               fontSize=9, textColor=accent, leading=11, spaceBefore=8, spaceAfter=3)
+                               fontSize=9, textColor=accent, leading=11, spaceBefore=5, spaceAfter=3)
     body_style = ParagraphStyle("body", parent=styles["Normal"], fontName="Helvetica",
                                 fontSize=9.5, leading=13.5, alignment=TA_LEFT, spaceAfter=2)
     role_style = ParagraphStyle("role", parent=styles["Normal"], fontName="Helvetica",
@@ -321,7 +321,7 @@ def build_pdf():
     link_html = "&nbsp;&nbsp;&#183;&nbsp;&nbsp;".join(
         f'<a href="{u}" color="#{ACCENT}"><u>{esc(t)}</u></a>' for t, u in LINKS)
     story.append(Paragraph(link_html, contact_style))
-    story.append(Spacer(1, 24))  # breathing room below the masthead before the body
+    story.append(Spacer(1, 9))  # breathing room below the masthead before the body
 
     story += section("Professional Summary")
     story.append(Paragraph(esc(SUMMARY), body_style))
@@ -355,7 +355,7 @@ def build_pdf():
     story.append(bullets(edu_items))
 
     # Editorial masthead drawn behind the real header text (ATS-safe — text stays selectable)
-    band_h = 1.78 * inch
+    band_h = 1.55 * inch
     LM = 0.7 * inch
 
     def draw_header_band(canvas, doc_):
