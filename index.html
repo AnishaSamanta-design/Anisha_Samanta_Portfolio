@@ -6,7 +6,7 @@
     <title>Anisha Samanta — UI/UX & Product Designer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;0,700;1,300;1,500;1,700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Inter:wght@300;400;500;600&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;0,700;1,300;1,500;1,700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Inter:wght@300;400;500;600&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500;600&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
 
 /* ═══════════════════════════════════════════════════════
@@ -58,6 +58,7 @@
     --body:  'Inter', 'DM Sans', system-ui, -apple-system, sans-serif;
     --mono:  'DM Mono', 'JetBrains Mono', monospace;
     --ui:    'DM Sans', system-ui, -apple-system, sans-serif;
+    --script:'Kalam', 'Segoe Script', cursive;
 
     --nav-h: 72px;
     --ease:  0.28s ease;
@@ -419,10 +420,40 @@ nav.nav-scrolled .nav-inner { height: calc(var(--nav-h) - 16px); }
     letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-muted);
 }
 .hero-h1 {
-    font-family: var(--serif); font-size: clamp(38px, 5.4vw, 70px);
-    font-weight: 700; line-height: 1.08; letter-spacing: -0.025em; margin-bottom: 26px;
+    font-family: var(--script); font-size: clamp(42px, 5.8vw, 76px);
+    font-weight: 700; line-height: 1.12; letter-spacing: 0; margin-bottom: 26px;
 }
 .hero-h1 em { font-style: italic; font-weight: 400; color: var(--rust); }
+
+/* ── Hero "handwritten" heading: one smooth, slow left-to-right ink sweep
+   (reads as being written, no cursor) ── */
+.hero-h1 { position: relative; }
+.hero-h1 .hw-ink {
+    display: inline-block;
+    /* reveal region grows left→right; negative bottom keeps descenders visible */
+    clip-path: inset(-0.12em 100% -0.22em 0);
+    -webkit-clip-path: inset(-0.12em 100% -0.22em 0);
+    will-change: clip-path;
+}
+.hero-h1.hw-go .hw-ink {
+    animation: hw-write 2.9s cubic-bezier(0.62,0.05,0.35,1) forwards;
+}
+@keyframes hw-write {
+    from { clip-path: inset(-0.12em 100% -0.22em 0); -webkit-clip-path: inset(-0.12em 100% -0.22em 0); }
+    to   { clip-path: inset(-0.12em 0 -0.22em 0);    -webkit-clip-path: inset(-0.12em 0 -0.22em 0); }
+}
+
+/* ── Hero paragraph: words fade up one by one ── */
+.hero-p .word {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(9px);
+    will-change: opacity, transform;
+}
+.hero-p.wd-go .word {
+    animation: wd-in 0.5s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes wd-in { to { opacity: 1; transform: translateY(0); } }
 
 .orn { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
 .orn-line { flex: 1; height: 1px; background: var(--gold-mid); max-width: 56px; }
@@ -2818,18 +2849,13 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-
         <div class="hero-grid">
 
             <div class="hero-text">
-                <div class="eyebrow">
-                    <span class="eyebrow-rule"></span>
-                    <span class="eyebrow-text">Product &amp; UI/UX Designer</span>
-                    <span class="eyebrow-rule"></span>
-                </div>
-                <h1 id="hero-heading" class="hero-h1">Hi, I'm Anisha.</h1>
+                <h1 id="hero-heading" class="hero-h1">Hi, I’m Anisha.</h1>
                 <div class="orn" aria-hidden="true">
                     <span class="orn-line"></span>
                     <span class="orn-sym">✦</span>
                     <span class="orn-line"></span>
                 </div>
-                <p class="hero-p">Product &amp; UI/UX Designer with 3+ years of design experience and 8+ years in enterprise technology. I transform complex workflows into intuitive, scalable experiences through research, strategy, and thoughtful design.</p>
+                <p class="hero-p">Product &amp; UI/UX Designer with 3+ years of design experience and total 8+ years in enterprise technology. I transform complex workflows into intuitive, scalable experiences through research, strategy, and thoughtful design.</p>
                 <div class="ctas">
                     <a href="#work" class="btn btn-primary">
                         View Work
@@ -3901,6 +3927,60 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-
 
     window.addEventListener('scroll', update, { passive: true });
     update();
+})();
+
+/* ── Hero intro: handwritten heading + word-by-word paragraph ── */
+(function () {
+    const h1 = document.getElementById('hero-heading');
+    const p  = document.querySelector('.hero-p');
+    if (!h1 || !p) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Heading: wrap the text in an ink span (swept open by clip-path) plus a pen
+    // nib that rides the writing front. Keep it accessible via aria-label.
+    const HW_DURATION = 2.9;   // seconds — keep in sync with the CSS animation
+    const headingText = h1.textContent;
+    h1.setAttribute('aria-label', headingText);
+    h1.textContent = '';
+    const ink = document.createElement('span');
+    ink.className = 'hw-ink';
+    ink.setAttribute('aria-hidden', 'true');
+    ink.textContent = headingText;
+    h1.appendChild(ink);
+
+    // Split the paragraph into word spans (keep whitespace as text nodes so it
+    // still wraps and reads normally); reveal them one by one as it's written.
+    const paraText = p.textContent;
+    p.textContent = '';
+    const pStart = HW_DURATION * 0.6;
+    let wi = 0;
+    paraText.split(/(\s+)/).forEach(tok => {
+        if (tok === '') return;
+        if (/^\s+$/.test(tok)) { p.appendChild(document.createTextNode(tok)); return; }
+        const s = document.createElement('span');
+        s.className = 'word';
+        s.textContent = tok;
+        s.style.animationDelay = (pStart + wi * 0.05) + 's';
+        wi++;
+        p.appendChild(s);
+    });
+
+    if (reduce) {
+        ink.style.clipPath = 'none'; ink.style.webkitClipPath = 'none';
+        p.querySelectorAll('.word').forEach(c => { c.style.opacity = '1'; c.style.animation = 'none'; c.style.transform = 'none'; });
+        return;
+    }
+
+    function start() {
+        h1.classList.add('hw-go');
+        p.classList.add('wd-go');
+    }
+    // Wait for the handwriting font so the sweep starts on the right glyphs.
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => requestAnimationFrame(start));
+    } else {
+        requestAnimationFrame(start);
+    }
 })();
 
 /* ── Theme ── */
