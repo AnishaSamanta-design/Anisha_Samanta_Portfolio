@@ -607,6 +607,11 @@ nav.nav-scrolled .nav-inner { height: calc(var(--nav-h) - 16px); }
     justify-content: center;
     gap: 0;
     margin-top: 56px;
+    /* z-axis depth: a shared 3D viewing frustum for the cards (Config 2026 z-motion).
+       A shorter perspective = stronger, more visible 3D distortion. */
+    perspective: 850px;
+    perspective-origin: 50% 38%;
+    transform-style: preserve-3d;
 }
 
 /* Glassmorphic recipe card */
@@ -622,11 +627,12 @@ nav.nav-scrolled .nav-inner { height: calc(var(--nav-h) - 16px); }
     border-radius: 20px;
     overflow: hidden;
     box-shadow: var(--glass-shine), 0 8px 32px rgba(43,34,26,0.11);
-    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+    transform-style: preserve-3d;
+    transition: transform 0.45s cubic-bezier(0.16,1,0.3,1), box-shadow 0.35s ease, border-color 0.35s ease;
 }
 .recipe-step:hover {
-    transform: translateY(-10px);
-    box-shadow: var(--glass-shine), 0 22px 56px rgba(43,34,26,0.17);
+    transform: translateZ(60px) translateY(-6px);
+    box-shadow: var(--glass-shine), 0 30px 64px rgba(43,34,26,0.2);
     border-color: rgba(201,150,61,0.35);
 }
 
@@ -743,23 +749,33 @@ nav.nav-scrolled .nav-inner { height: calc(var(--nav-h) - 16px); }
     transition: opacity 0.35s ease, transform 0.5s cubic-bezier(0.16,1,0.3,1);
 }
 
-/* ── Approach section: scroll-triggered stagger animation ── */
+/* ── Approach section: scroll-triggered z-axis (depth) stagger animation ── */
 .recipe-steps .recipe-step {
     opacity: 0;
-    transform: translateX(-44px) scale(0.97);
+    /* pivot from the bottom edge so the card visibly "stands up" out of depth */
+    transform-origin: 50% 100%;
+    /* start far back along the z-axis, sunk down and tilted away from the viewer,
+       then fly forward and stand upright at z:0 */
+    transform: translateZ(-520px) translateY(60px) rotateX(48deg);
     transition:
-        opacity   0.6s cubic-bezier(0.16,1,0.3,1),
-        transform 0.6s cubic-bezier(0.16,1,0.3,1),
+        opacity   0.85s cubic-bezier(0.16,1,0.3,1),
+        transform 0.85s cubic-bezier(0.16,1,0.3,1),
         border-color 0.35s ease,
         box-shadow   0.35s ease;
 }
 
-/* Sequential reveal: steps slide in horizontally, arrows draw as a progress status.
-   Revealed items stay open; the whole thing resets/replays when the section
-   re-enters the viewport (see the approach observer JS). */
+/* Sequential reveal: steps emerge from depth (z-axis), arrows draw as a progress
+   status. Revealed items stay open; the whole thing resets/replays when the
+   section re-enters the viewport (see the approach observer JS). */
 #approach.approach-in .recipe-steps .recipe-step {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translateZ(0) translateY(0) rotateX(0);
+}
+
+/* Keep the z-axis hover pop working after the reveal (higher specificity than
+   the .approach-in active transform above). */
+#approach.approach-in .recipe-steps .recipe-step:hover {
+    transform: translateZ(60px) translateY(-6px);
 }
 #approach.approach-in .recipe-steps .recipe-arrow { opacity: 0.72; transform: scaleX(1); }
 
@@ -2582,6 +2598,8 @@ nav.nav-scrolled .nav-inner { height: calc(var(--nav-h) - 16px); }
         transition-duration: 0.01ms !important;
     }
     .reveal { opacity: 1; transform: none; }
+    .recipe-steps .recipe-step { opacity: 1; transform: none; }
+    .recipe-steps .recipe-arrow { opacity: 0.72; transform: none; }
     .scroll-cue-label { animation: none; }
     .avail-dot { animation: none; }
 }
