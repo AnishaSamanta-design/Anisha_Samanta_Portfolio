@@ -1519,6 +1519,7 @@ nav.nav-scrolled .nav-inner { height: calc(var(--nav-h) - 16px); }
     box-shadow: 0 2px 8px rgba(43,34,26,0.10);
 }
 .exp-logo img { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
+.exp-logo-text { font-family: var(--ui); font-size: 15px; font-weight: 700; color: var(--rust); letter-spacing: 0.02em; }
 .exp-body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .exp-role { font-family: var(--serif); font-size: 16.5px; font-weight: 700; font-style: italic;
     color: var(--ink); line-height: 1.25; margin: 0; }
@@ -3494,6 +3495,17 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-
                     </div>
                 </article>
 
+                <article class="cred-card exp-card">
+                    <div class="exp-logo">
+                        <span class="exp-logo-text">IN</span>
+                    </div>
+                    <div class="exp-body">
+                        <p class="exp-role">User Experience Designer</p>
+                        <p class="exp-company">Innovecture</p>
+                        <p class="exp-period">2026 – Present</p>
+                    </div>
+                </article>
+
             </div>
         </div>
 
@@ -4010,7 +4022,7 @@ mobNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobNa
     const FILE      = 'Anisha_Samanta_Resume2026.pdf';
     // Cache-buster: the PDF filename never changes, so browsers/CDN cache it hard.
     // Bump this whenever the resume is regenerated so the new file is fetched.
-    const URLV      = FILE + '?v=20260629b';
+    const URLV      = FILE + '?v=20260808';
     const viewer    = document.getElementById('resumeLightbox');
     const backdrop  = document.getElementById('resumeLightboxBackdrop');
     const closeBtn  = document.getElementById('resumeLightboxClose');
